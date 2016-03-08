@@ -15,6 +15,11 @@ public class Application {
 		return "Hello Docker World. This is a new version just for you!";
 	}
 
+	@RequestMapping("/admin")
+	public String admin() {
+		return "this is the admin page";
+	}
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
