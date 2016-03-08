@@ -12,7 +12,7 @@ public class Application {
 
 	@RequestMapping("/")
 	public String home() {
-		return "Hello Docker World. This is a new version!";
+		return "Hello Docker World. This is a new version just for you!";
 	}
 
 
