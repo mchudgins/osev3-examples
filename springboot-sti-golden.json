@@ -49,9 +49,9 @@
          "kind": "Template",
          "apiVersion": "v1",
          "metadata": {
-            "name": "springboot-helloworld-maven",
+            "name": "springboot-maven-builder",
             "annotations": {
-               "description": "Sample Spring Boot helloworld built with maven",
+               "description": "Spring Boot applications built with maven",
                "iconClass": "icon-jboss",
                "tags": "instant-app,springboot,maven,java"
             }
