@@ -12,7 +12,7 @@ public class Application {
 
 	@RequestMapping("/")
 	public String home() {
-		return "Hello Docker World. This is a new version just for you!";
+		return "Hello Docker World. This version was built using springboot-sti from the golden namespace.";
 	}
 
 	@RequestMapping("/admin")
