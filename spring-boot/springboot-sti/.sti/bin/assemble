@@ -136,5 +136,7 @@ if [ $(ls /opt/openshift/*.jar | wc -l) -eq 1 ]; then
   [ ! -f /opt/openshift/app.jar ] && echo "Application could not be properly built." && exit 1 
   echo "Application jar file is located in /opt/openshift/app.jar"
 else
+  echo "Whoa.  More than one jar file found!  This builder assumes you have a single (fat) jar."
+  echo "Found the following jars:  " `ls /opt/openshift/*.jar`
   exit 1
 fi
