@@ -7,6 +7,8 @@ MAINTAINER Jorge Morales <jmorales@redhat.com>
 ENV GRADLE_VERSION 2.6
 ENV MAVEN_VERSION 3.3.3
 
+COPY settings.xml /opt/app-root/.m2/settings.xml
+
 RUN yum install -y --enablerepo=centosplus \
     tar unzip bc which lsof java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
     yum clean all -y && \
@@ -21,6 +23,7 @@ RUN yum install -y --enablerepo=centosplus \
     ln -sf /usr/local/gradle/bin/gradle /usr/local/bin/gradle && \
     mkdir -p /opt/openshift && \
     mkdir -p /opt/app-root/source && chmod -R a+rwX /opt/app-root/source && \
+    mkdir -p /opt/app-root/.m2 && chmod -R a+rwX /opt/app-root/.m2 && \
     mkdir -p /opt/s2i/destination && chmod -R a+rwX /opt/s2i/destination && \
     mkdir -p /opt/app-root/src && chmod -R a+rwX /opt/app-root/src
 
