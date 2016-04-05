@@ -21,7 +21,7 @@ RUN yum install -y --enablerepo=centosplus \
     ln -sf /usr/local/gradle/bin/gradle /usr/local/bin/gradle && \
     mkdir -p /opt/openshift && \
     mkdir -p /opt/app-root/source && chmod -R a+rwX /opt/app-root/source && \
-    mkdir -p /opt/app-root/.m2 && chmod -R a+rwX /opt/app-root/.m2 && \
+    mkdir -p /opt/app-root/src/.m2 && chmod -R a+rwX /opt/app-root/src/.m2 && \
     mkdir -p /opt/s2i/destination && chmod -R a+rwX /opt/s2i/destination && \
     mkdir -p /opt/app-root/src && chmod -R a+rwX /opt/app-root/src
 
@@ -41,7 +41,7 @@ LABEL io.k8s.description="Platform for building Spring Boot applications with ma
 
 LABEL io.openshift.s2i.scripts-url=image:///usr/local/sti
 COPY ./.sti/bin/ /usr/local/sti
-COPY settings.xml /opt/app-root/.m2/settings.xml
+COPY settings.xml /opt/app-root/src/.m2/settings.xml
 
 RUN chown -R 1001:1001 /opt/openshift && chmod -R a+rwX /opt/app-root
 
