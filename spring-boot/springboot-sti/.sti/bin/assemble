@@ -55,7 +55,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   pushd $LOCAL_SOURCE_DIR &> /dev/null
 
   if [ -z "$BUILDER_ARGS" ]; then
-    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B"
+    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B -s /opt/app-root/src/.m2/settings.xml"
   fi
 
   echo "Found pom.xml... attempting to build with 'mvn -e ${BUILDER_ARGS}'"
@@ -66,7 +66,6 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 	echo "HOME: $HOME"
 	echo "HOME/.m2:"
 	ls -l $HOME/.m2
-	cat $HOME/.m2/settings.xml
 
   # Execute the actual build
   mvn -e $BUILDER_ARGS
