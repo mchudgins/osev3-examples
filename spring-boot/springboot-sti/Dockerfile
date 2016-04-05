@@ -7,8 +7,6 @@ MAINTAINER Jorge Morales <jmorales@redhat.com>
 ENV GRADLE_VERSION 2.6
 ENV MAVEN_VERSION 3.3.3
 
-COPY settings.xml /opt/app-root/.m2/settings.xml
-
 RUN yum install -y --enablerepo=centosplus \
     tar unzip bc which lsof java-1.8.0-openjdk java-1.8.0-openjdk-devel && \
     yum clean all -y && \
@@ -43,8 +41,10 @@ LABEL io.k8s.description="Platform for building Spring Boot applications with ma
 
 LABEL io.openshift.s2i.scripts-url=image:///usr/local/sti
 COPY ./.sti/bin/ /usr/local/sti
+COPY settings.xml /opt/app-root/.m2/settings.xml
 
-RUN chown -R 1001:1001 /opt/openshift
+RUN chown -R 1001:1001 /opt/openshift && chmod -R a+rwX /opt/app-root
+
 
 # This default user is created in the openshift/base-centos7 image
 USER 1001
