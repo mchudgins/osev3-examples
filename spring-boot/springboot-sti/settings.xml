@@ -150,7 +150,7 @@
 
 		<mirror>
 			<id>local-cache-central</id>
-			<mirrorOf>*</mirrorOf>
+			<mirrorOf>nothing</mirrorOf>
 			<name>Intra-cluster local cache of maven central</name>
 			<url>http://artifactory/artifactory/remote-repos</url>
 		</mirror>
