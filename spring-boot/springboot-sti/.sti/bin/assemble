@@ -63,9 +63,8 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   echo "Maven version:"
   mvn --version
 
-	echo "HOME: $HOME"
-	echo "HOME/.m2:"
-	ls -l $HOME/.m2
+echo "Current Environment:"
+printenv | sort
 
   # Execute the actual build
   mvn -e $BUILDER_ARGS
