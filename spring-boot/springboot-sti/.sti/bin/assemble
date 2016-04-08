@@ -76,6 +76,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 
 	# total time, in millis
 	if [[ ! -z "${ARTIFACTORY}" ]]; then
+echo "build complete.  building data set"
 		tt=$((($(date +%s%N) - $ts)/1000000))
 
 		# maven data
@@ -96,6 +97,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 		version=`xml_grep --root /project/version --text pom.xml`
 		package=`xml_grep --root /project/packaging --text pom.xml`
 		target="${artifact}-${version}.${package}"
+echo "checking for file ${target}"
 		if [[ -f target/${target} ]]; then
 			md5=`md5sum -b target/${target} | sed 's/ \*.*//'`
 			size=`stat -c %s target/${target}`
@@ -103,6 +105,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 			md5="0"
 			size=0
 		fi
+echo "file has md5 ${md5} and size ${size}"
 
 		# openshift build data
 		buildarray=(${OPENSHIFT_BUILD_NAME//-/ })
@@ -114,6 +117,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 			buildstatus="FAIL"
 		fi
 
+echo buildstatus ${buildstatus}
 		# build the json file describing the build and send it to curl
 		CURL_OPTS="-s -X PUT -H 'Content-Type application/json'"
 		(
@@ -127,6 +131,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 				"md5sum"	: "${md5}",
 				"size"		: ${size}
 			},
+			"args"		: "${BUILDER_ARGS}",
 			"status"	: "${buildstatus}",
 			"type"		: "MAVEN",
 			"buildAgent" : {
@@ -153,11 +158,11 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 				"repo"	: "${OPENSHIFT_BUILD_SOURCE}",
 				"ref"		: "${OPENSHIFT_BUILD_REFERENCE}"
 			}
-
 		}
 _EOF_
 	) | curl ${CURL_OPTS} --data - ${ARTIFACTORY}/api/build
 
+echo "done curling. exit $?"
 	fi
 
   if [ $ERR -ne 0 ]; then
