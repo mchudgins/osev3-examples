@@ -94,7 +94,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 		artifact=`xml_grep --root /project/artifactID --text pom.xml`
 		group=`xml_grep --root /project/groupID --text pom.xml`
 		version=`xml_grep --root /project/version --text pom.xml`
-		package=`xml_gre --root /project/packaging --text pom.xml`
+		package=`xml_grep --root /project/packaging --text pom.xml`
 		target="${artifact}-${version}.${package}"
 		if [[ -f target/${target} ]]; then
 			md5=`md5sum -b target/${target} | sed 's/ \*.*//'`
