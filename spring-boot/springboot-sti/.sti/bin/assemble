@@ -28,6 +28,10 @@ fi
 
 ##############################################################################
 
+# get the start time
+START=`date --iso-8601=seconds`
+ts=$(date +%s%N)
+
 # Source code provided to STI is at ${HOME}/source
 HOME=/opt/app-root/src
 LOCAL_SOURCE_DIR=${HOME}/source
@@ -63,13 +67,99 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   echo "Maven version:"
   mvn --version
 
-echo "Current Environment:"
-printenv | sort
-
   # Execute the actual build
   mvn -e $BUILDER_ARGS
 
   ERR=$?
+
+	# tell artifactory about the build
+
+	# total time, in millis
+	if [[ ! -z "${ARTIFACTORY}" ]]; then
+		tt=$((($(date +%s%N) - $ts)/1000000))
+
+		# maven data
+		maven=`mvn --version`
+		mvn_version=`mvn --version | head -1 | sed 's/Apache Maven //'`
+		mvn_home=`mvn --version | sed -n '2p' | sed 's/Maven home: //'`
+		java_version=`mvn --version | sed -n '3p' | sed 's/Java version: //' | sed 's/, vendor: .*//'`
+		java_vendor=`mvn --version | sed -n '3p' | sed 's/.*, vendor: //'`
+
+		# platform data
+		linux_kernel=`uname -r`
+		linux_release=`uname -v`
+		linux_platform=`uname -i`
+
+		# pom data
+		artifact=`xml_grep --root /project/artifactID --text pom.xml`
+		group=`xml_grep --root /project/groupID --text pom.xml`
+		version=`xml_grep --root /project/version --text pom.xml`
+		package=`xml_gre --root /project/packaging --text pom.xml`
+		target="${artifact}-${version}.${package}"
+		if [[ -f target/${target} ]]; then
+			md5=`md5sum -b target/${target} | sed 's/ \*.*//'`
+			size=`stat -c %s target/${target}`
+		else
+			md5="0"
+			size=0
+		fi
+
+		# openshift build data
+		buildarray=(${OPENSHIFT_BUILD_NAME//-/ })
+		buildnum=${buildarray[${#buildarray[@]}-1]}
+		buildname=${OPENSHIFT_BUILD_NAME%%-[0-9]*}
+
+		buildstatus="SUCCESS"
+		if [[ $ERR -ne 0 ]]; then
+			buildstatus="FAIL"
+		fi
+
+		# build the json file describing the build and send it to curl
+		CURL_OPTS="-s -X PUT -H 'Content-Type application/json'"
+		(
+		cat <<_EOF_
+		{
+			"version" : "${BUILDER_VERSION}",
+			"name"		: "${buildname}",
+			"number"	: "${buildnum}",
+			"artifact": {
+				"name"		: "${group}::${target}",
+				"md5sum"	: "${md5}",
+				"size"		: ${size}
+			},
+			"status"	: "${buildstatus}",
+			"type"		: "MAVEN",
+			"buildAgent" : {
+				"name"		: "Maven",
+				"version"	: "${mvn_version}",
+				"java" 		: {
+					"version" : "${java_version}",
+					"vendor"	: "${java_vendor}"
+				},
+				"os"			: {
+					"kernel"	: "${linux_kernel}",
+					"release"	: "${linux_release}",
+					"platform": "${linux_platform}"
+				}
+			},
+			"agent"	: {
+				"name"		: "springboot-sti"
+			},
+			"started"		: "${START}",
+			"durationMillis" : ${tt},
+			"url"				: "https://s3.amazonaws.com/dstcorp/builds/${OPENSHIFT_BUILD_NAMESPACE}/${buildname}/${buildnum}",
+			"git" : {
+				"commit" : "${OPENSHIFT_BUILD_COMMIT}",
+				"repo"	: "${OPENSHIFT_BUILD_SOURCE}",
+				"ref"		: "${OPENSHIFT_BUILD_REFERENCE}"
+			}
+
+		}
+_EOF_
+	) | curl ${CURL_OPTS} --data - ${ARTIFACTORY}/api/build
+
+	fi
+
   if [ $ERR -ne 0 ]; then
     echo "Aborting due to error code $ERR from Maven build"
     exit $ERR
@@ -79,13 +169,15 @@ printenv | sort
   # to the $DEPLOY_DIR directory for later deployment
   copy_artifacts target
 
-  # clean up after maven
+	# clean up after maven
   mvn clean
   if [ -d "$HOME/.m2/repository" ]; then
     rm -r "$HOME/.m2/repository"
   fi
 
   popd &> /dev/null
+
+
 elif [ -f "$LOCAL_SOURCE_DIR/build.gradle" ]; then
    echo "Building with gradle. $LOCAL_SOURCE_DIR/build.gradle found."
 

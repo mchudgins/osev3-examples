@@ -57,4 +57,4 @@ EXPOSE 8080
 CMD ["usage"]
 
 # set the artifactory service name
-ENV ARTIFACTORY artifactory.default.svc.cluster.local
+ENV ARTIFACTORY https://artifactory.default.svc.cluster.local/artifactory
