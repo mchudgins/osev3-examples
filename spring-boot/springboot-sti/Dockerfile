@@ -20,10 +20,9 @@ RUN yum install -y --enablerepo=centosplus \
     mv /usr/local/gradle-${GRADLE_VERSION} /usr/local/gradle && \
     ln -sf /usr/local/gradle/bin/gradle /usr/local/bin/gradle && \
     mkdir -p /opt/openshift && \
-    mkdir -p /opt/app-root/source && chmod -R a+rwX /opt/app-root/source && \
-    mkdir -p /opt/app-root/src/.m2 && chmod -R a+rwX /opt/app-root/src/.m2 && \
-    mkdir -p /opt/s2i/destination && chmod -R a+rwX /opt/s2i/destination && \
-    mkdir -p /opt/app-root/src && chmod -R a+rwX /opt/app-root/src
+    mkdir -p /opt/app-root/src && chmod -R a+rwX /opt/app-root/src && \
+    mkdir -p /opt/app-root/.m2 && chmod -R a+rwX /opt/app-root/.m2 && \
+    mkdir -p /opt/s2i/destination && chmod -R a+rwX /opt/s2i/destination
 
 ENV PATH=/opt/maven/bin/:/opt/gradle/bin/:$PATH
 
@@ -41,9 +40,10 @@ LABEL io.k8s.description="Platform for building Spring Boot applications with ma
 
 LABEL io.openshift.s2i.scripts-url=image:///usr/local/sti
 COPY ./.sti/bin/ /usr/local/sti
-#COPY settings.xml /opt/app-root/src/.m2/settings.xml
+COPY settings.xml /opt/app-root/.m2/settings.xml
 
-RUN chown -R 1001:1001 /opt/openshift && chmod -R a+rwX /opt/app-root
+RUN chown -R 1001:1001 /opt/openshift && chmod -R a+rwX /opt/openshift \
+  && chown -R 1001:1001 /opt/app-root && chmod -R a+rwX /opt/app-root
 
 
 # This default user is created in the openshift/base-centos7 image
@@ -57,4 +57,4 @@ EXPOSE 8080
 CMD ["usage"]
 
 # set the artifactory service name
-#ENV ARTIFACTORY https://artifactory.default.svc.cluster.local/artifactory
+ENV ARTIFACTORY https://artifactory.default.svc.cluster.local/artifactory
