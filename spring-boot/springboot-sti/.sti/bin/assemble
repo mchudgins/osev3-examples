@@ -33,7 +33,7 @@ START=`date --iso-8601=seconds`
 ts=$(date +%s%N)
 
 # Source code provided to STI is at ${HOME}/source
-HOME=/opt/app-root/src
+HOME=/opt/app-root
 LOCAL_SOURCE_DIR=${HOME}/source
 mkdir -p $LOCAL_SOURCE_DIR
 
