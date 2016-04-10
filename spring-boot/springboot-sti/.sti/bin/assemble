@@ -76,7 +76,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 	# tell artifactory about the build
 
 	# total time, in millis
-	if [[ ! -z "${ARTIFACTORY}" ]]; then
+	if [[ -n "${ARTIFACTORY}" ]]; then
 echo "build complete.  building data set"
 		tt=$((($(date +%s%N) - $ts)/1000000))
 
