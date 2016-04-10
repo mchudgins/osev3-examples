@@ -59,7 +59,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   pushd $LOCAL_SOURCE_DIR &> /dev/null
 
   if [ -z "$BUILDER_ARGS" ]; then
-    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B -s /opt/app-root/src/.m2/settings.xml"
+    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B -s /opt/app-root/.m2/settings.xml"
 #    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B"
   fi
 
