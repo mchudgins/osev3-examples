@@ -28,8 +28,8 @@ fi
 
 ##############################################################################
 
-# get the start time
-START=`date --iso-8601=seconds`
+# get the start time (artifactory expects ms precision only)
+START=`date --iso-8601=ns | sed -i 's/,[0-9]*/.00/'`
 ts=$(date +%s%N)
 
 # Source code provided to STI is at ${HOME}/source
@@ -94,7 +94,7 @@ echo "build complete.  building data set"
 
 		# pom data
 		artifact=`xml_grep --root /project/artifactId --text pom.xml`
-		group=`xml_grep --root /project/groupID --text pom.xml`
+		group=`xml_grep --root /project/groupId --text pom.xml`
 		version=`xml_grep --root /project/version --text pom.xml`
 		package=`xml_grep --root /project/packaging --text pom.xml`
 		target="${artifact}-${version}.${package}"
@@ -162,8 +162,8 @@ echo buildstatus ${buildstatus}
 		}
 _EOF_
 	) > /tmp/build.json
-		curl ${CURL_OPTS} --data @/tmp/build.json ${ARTIFACTORY}/api/build
-echo curl ${CURL_OPTS} --data - ${ARTIFACTORY}/api/buid
+		curl ${CURL_OPTS} --data '@/tmp/build.json' ${ARTIFACTORY}/api/build
+echo curl ${CURL_OPTS} --data - ${ARTIFACTORY}/api/build
 echo "done curling. exit $?"
 	fi
 
