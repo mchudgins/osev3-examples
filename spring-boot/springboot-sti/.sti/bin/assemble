@@ -161,7 +161,8 @@ echo buildstatus ${buildstatus}
 			}
 		}
 _EOF_
-	) | curl ${CURL_OPTS} --data - ${ARTIFACTORY}/api/build
+	) > /tmp/build.json
+		curl ${CURL_OPTS} --data @/tmp/build.json ${ARTIFACTORY}/api/build
 echo curl ${CURL_OPTS} --data - ${ARTIFACTORY}/api/buid
 echo "done curling. exit $?"
 	fi
