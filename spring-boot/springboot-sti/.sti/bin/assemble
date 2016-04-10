@@ -33,7 +33,7 @@ START=`date --iso-8601=seconds`
 ts=$(date +%s%N)
 
 # Source code provided to STI is at ${HOME}/source
-HOME=/opt/app-root
+export HOME=/opt/app-root
 LOCAL_SOURCE_DIR=${HOME}/src
 mkdir -p $LOCAL_SOURCE_DIR
 
@@ -59,8 +59,8 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   pushd $LOCAL_SOURCE_DIR &> /dev/null
 
   if [ -z "$BUILDER_ARGS" ]; then
-#    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B -s /opt/app-root/src/.m2/settings.xml"
-    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B"
+    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B -s /opt/app-root/src/.m2/settings.xml"
+#    export BUILDER_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -B"
   fi
 
   echo "Found pom.xml... attempting to build with 'mvn -e ${BUILDER_ARGS}'"
