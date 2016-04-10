@@ -93,7 +93,7 @@ echo "build complete.  building data set"
 		linux_platform=`uname -i`
 
 		# pom data
-		artifact=`xml_grep --root /project/artifactID --text pom.xml`
+		artifact=`xml_grep --root /project/artifactId --text pom.xml`
 		group=`xml_grep --root /project/groupID --text pom.xml`
 		version=`xml_grep --root /project/version --text pom.xml`
 		package=`xml_grep --root /project/packaging --text pom.xml`
@@ -120,12 +120,12 @@ echo "file has md5 ${md5} and size ${size}"
 
 echo buildstatus ${buildstatus}
 		# build the json file describing the build and send it to curl
-		CURL_OPTS="-s -X PUT -H 'Content-Type application/json'"
+		CURL_OPTS='-s -X PUT -H "Content-Type: application/json"'
 		(
 		cat <<_EOF_
 		{
 			"version" : "${BUILDER_VERSION}",
-			"name"		: "${buildname}",
+			"name"		: "${OPENSHIFT_BUILD_NAMESPACE}-${buildname}",
 			"number"	: "${buildnum}",
 			"artifact": {
 				"name"		: "${group}::${target}",
@@ -162,7 +162,7 @@ echo buildstatus ${buildstatus}
 		}
 _EOF_
 	) | curl ${CURL_OPTS} --data - ${ARTIFACTORY}/api/build
-
+echo curl ${CURL_OPTS} --data - ${ARTIFACTORY}/api/buid
 echo "done curling. exit $?"
 	fi
 
